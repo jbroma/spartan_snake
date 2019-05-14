@@ -50,9 +50,12 @@ architecture Behavioral of rx is
 	signal tick_counter, tick_counter_next: unsigned(3 downto 0);
 	signal bit_counter, bit_counter_next: unsigned(2 downto 0);
 	signal shift_register, shift_register_next: std_logic_vector(7 downto 0);
+
+	signal stable_input: std_logic;
+	signal previous_input: std_logic;
 begin
 	
-	-- zmiany stan√3w i asynchroniczny reset
+	-- zmiany stanoww i asynchroniczny reset
 	process(clk,rst)
 	begin
 		if rst = '1' then
@@ -60,11 +63,15 @@ begin
 			tick_counter <= "0000";
 			bit_counter <= "000";
 			shift_register <= "00000000";
+			stable_input <= '1';
+			previous_input <= '1';
 		elsif clk'event and clk = '1' then
 			state <= next_state;
 			tick_counter <= tick_counter_next;
 			bit_counter <= bit_counter_next;
 			shift_register <= shift_register_next;
+			stable_input <= rx_input_bit;
+			previous_input <= stable_input;
 		end if;
 	end process;
 	
@@ -79,7 +86,7 @@ begin
 		
 		case state is
 			when idle =>
-				if rx_input_bit='0' then
+				if stable_input = '0' and previous_input = '1' then
 					next_state <= start;
 					tick_counter_next <= "0000";
 				end if;
