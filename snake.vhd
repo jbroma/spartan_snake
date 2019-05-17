@@ -30,7 +30,8 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity snake is
-    Port ( clk : in std_logic;
+    Port ( rst : in std_logic;
+			  clk : in std_logic;
            key_input : in  std_logic_vector (3 downto 0);
            input_ready : in  std_logic;
            VGA_X : in  std_logic_vector (11 downto 0);
@@ -42,39 +43,44 @@ architecture Behavioral of snake is
 
    -- Basic snake array:
 type int_arr is array (integer range <>, integer range <>) of integer;
-signal snake_arr : int_arr (0 to 20, 0 to 1) := ((399, 299), (399, 289), (399, 279), (399, 269), (399, 259), (399, 249), others => (others=>-1));
-signal snake_len : integer := 6;
+signal snake_arr : int_arr (0 to 20, 0 to 1);
+signal snake_len : integer;
 
-signal h_pos : integer := 0;
-signal v_pos : integer := 0;
+signal h_pos : integer;
+signal v_pos : integer;
 
-signal direction : integer := 8;
-signal draw_rgb : std_logic_vector(2 downto 0) := "000";
+signal direction : integer;
+signal draw_rgb : std_logic_vector(2 downto 0);
 
-signal time_count : integer := 0;
-signal move_rdy : std_logic := '0';
+signal time_count : integer;
+signal move_rdy : std_logic;
 
 begin
 
 -- Should move the snake each half a sec 
-time_counter:process(clk, time_count)
+time_counter:process(clk, rst, time_count)
 begin
-   if rising_edge(clk) then
-      time_count <= time_count + 1;
+	if rst = '1' then
+		time_count <= 0;
+		move_rdy <= '0';
+   elsif rising_edge(clk) then
       if time_count = 25000000 then
 			time_count <= 0;
          move_rdy <= '1';
       else 
          move_rdy <= '0';
+			time_count <= time_count + 1; 
       end if;
    end if;
 end process;
 
 
-change_direction:process(clk, input_ready, key_input)
+change_direction:process(clk, rst, input_ready, key_input)
 variable dir : integer;
 begin
-   if rising_edge(clk) and input_ready = '1' then
+	if rst = '1' then
+		direction <= 8;
+   elsif rising_edge(clk) and input_ready = '1' then
       dir := to_integer(unsigned(key_input));
       if(dir /= 0) then
          direction <= dir;
@@ -82,9 +88,11 @@ begin
    end if;
 end process;
 
-move_snake:process(clk, move_rdy, direction)
+move_snake:process(clk, rst, move_rdy, direction)
 begin
-   if rising_edge(clk) and move_rdy = '1' then
+	if rst = '1' then
+		snake_arr <= ((399, 299), (399, 289), (399, 279), (399, 269), (399, 259), (399, 249), others => (others=>-1));
+   elsif rising_edge(clk) and move_rdy = '1' then
 		-- Shift the whole array
       shift_loop : for k in 5 downto 1 loop
          snake_arr(k,0) <= snake_arr(k-1,0);
@@ -103,9 +111,13 @@ begin
    end if;
 end process;
 
-draw:process(clk, VGA_X, VGA_Y)
+draw:process(clk, rst, VGA_X, VGA_Y)
 begin
-	if rising_edge(clk) then
+	if rst = '1' then
+		h_pos <= 0;
+		v_pos <= 0;
+		draw_rgb <= "000";
+	elsif rising_edge(clk) then
 		h_pos <= to_integer(unsigned(VGA_X));
 		v_pos <= to_integer(unsigned(VGA_Y));
 		
