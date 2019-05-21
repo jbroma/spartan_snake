@@ -50,12 +50,12 @@ architecture Behavioral of rx is
 	signal tick_counter, tick_counter_next: unsigned(3 downto 0);
 	signal bit_counter, bit_counter_next: unsigned(2 downto 0);
 	signal shift_register, shift_register_next: std_logic_vector(7 downto 0);
-
-	signal stable_input: std_logic;
-	signal previous_input: std_logic;
+   
+   signal previous_bit: std_logic;
+   signal stable_input: std_logic;
 begin
 	
-	-- zmiany stanoww i asynchroniczny reset
+	-- zmiany stanA3w i asynchroniczny reset
 	process(clk,rst)
 	begin
 		if rst = '1' then
@@ -63,30 +63,31 @@ begin
 			tick_counter <= "0000";
 			bit_counter <= "000";
 			shift_register <= "00000000";
-			stable_input <= '1';
-			previous_input <= '1';
+         stable_input <= '1';
+         previous_bit <= '1';
 		elsif clk'event and clk = '1' then
 			state <= next_state;
 			tick_counter <= tick_counter_next;
 			bit_counter <= bit_counter_next;
 			shift_register <= shift_register_next;
-			stable_input <= rx_input_bit;
-			previous_input <= stable_input;
+         stable_input <= rx_input_bit;
+         previous_bit <= stable_input;
 		end if;
+      
 	end process;
 	
 	-- wlasciwa logika
-	process(state,tick_counter,bit_counter,shift_register,s_tick,rx_input_bit)
+	process(state,tick_counter,bit_counter,shift_register,s_tick,rx_input_bit, stable_input, previous_bit)
 	begin
 		next_state <= state;
 		tick_counter_next <= tick_counter;
 		bit_counter_next <= bit_counter;
 		shift_register_next <= shift_register;
 		rx_input_bit_finished <= '0';
-		
+      
 		case state is
 			when idle =>
-				if stable_input = '0' and previous_input = '1' then
+				if stable_input ='0' and previous_bit = '1' then
 					next_state <= start;
 					tick_counter_next <= "0000";
 				end if;
@@ -129,4 +130,3 @@ begin
 		data_out <= shift_register;
 		
 end Behavioral;
-

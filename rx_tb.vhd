@@ -52,10 +52,10 @@ ARCHITECTURE behavior OF rx_tb IS
     
 
    --Inputs
-   signal clk : std_logic ;
-   signal rst : std_logic ;
-   signal rx_input_bit : std_logic;
-   signal s_tick : std_logic;
+   signal clk : std_logic := '0';
+   signal rst : std_logic := '0';
+   signal rx_input_bit : std_logic := '0';
+   signal s_tick : std_logic := '0';
 
  	--Outputs
    signal rx_input_bit_finished : std_logic;

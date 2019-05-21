@@ -41,13 +41,13 @@ begin
    process(input_ready, keycode, keys)
    begin
       if input_ready = '1' then
-         if keycode = X"1D" then -- letter W
+         if keycode = X"77" then -- letter W
             keys <= "1000";
-         elsif keycode = X"1B" then -- letter S
+         elsif keycode = X"73" then -- letter S
             keys <= "0100";
-         elsif keycode = X"1C" then -- letter A
+         elsif keycode = X"61" then -- letter A
             keys <= "0010";
-         elsif keycode = X"23" then -- letter D
+         elsif keycode = X"64" then -- letter D
             keys <= "0001";
          else
             keys <= "0000";

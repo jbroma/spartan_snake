@@ -51,4 +51,3 @@ begin
 	tick <= output;
 	
 end Behavioral;
-
