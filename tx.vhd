@@ -54,7 +54,7 @@ architecture Behavioral of tx is
 	signal tx_counter, tx_counter_next: std_logic;
 begin
 
--- zmiany stanA3w i asynchroniczny reset
+-- zmiany stanoww i asynchroniczny reset
 	process(clk,rst)
 	begin
 		if rst = '1' then

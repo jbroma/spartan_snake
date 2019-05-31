@@ -55,7 +55,7 @@ architecture Behavioral of rx is
    signal stable_input: std_logic;
 begin
 	
-	-- zmiany stanA3w i asynchroniczny reset
+	-- zmiany stanoww i asynchroniczny reset
 	process(clk,rst)
 	begin
 		if rst = '1' then
@@ -77,7 +77,7 @@ begin
 	end process;
 	
 	-- wlasciwa logika
-	process(state,tick_counter,bit_counter,shift_register,s_tick,rx_input_bit, stable_input, previous_bit)
+	process(state,tick_counter,bit_counter,shift_register,s_tick, stable_input, previous_bit)
 	begin
 		next_state <= state;
 		tick_counter_next <= tick_counter;
@@ -105,7 +105,7 @@ begin
 				if s_tick = '1' then
 					if tick_counter=15 then
 						tick_counter_next <= "0000";
-						shift_register_next <= rx_input_bit & shift_register(7 downto 1);
+						shift_register_next <= stable_input & shift_register(7 downto 1);
 						if bit_counter = DATA_BITS - 1 then
 							next_state <= stop;
 						else

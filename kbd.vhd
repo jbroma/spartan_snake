@@ -32,7 +32,7 @@ entity kbd is
             key : out  std_logic_vector (3 downto 0));
 end kbd;
 
--- czysto kombinatoryczny uklad, nie powinen wymagac synchronizacji (oba wejscia sa synchroniczne)
+-- czysto kombinatoryczny uklad
 architecture Behavioral of kbd is	
 
 signal keys : std_logic_vector (3 downto 0);
